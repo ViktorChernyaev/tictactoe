@@ -2,6 +2,7 @@ import React from "react";
 import { createEvent, createEffect, createStore, combine } from "effector";
 import { useStore } from "effector-react";
 import { Row, Square } from "./ui";
+import { computeScore } from "./computeScore";
 
 const USERS = ["Bruce Wayne", "Tony Stark"]; //unique names
 const INITIAL_USER = USERS[0];
@@ -17,42 +18,6 @@ const FIELDS = Array.from(Array(FIELD_SIZE).keys()).map(row => {
     })
   };
 });
-
-const computeWinner = ({ fields, cell, user, sizeToWin }) => {
-  const vertical = fields.reduce((acc, row) => {
-    const haveScoreInRow = row.cells.find(item => item.cellId === cell.cellId && item.state === user);
-    return haveScoreInRow ? acc + 1 : acc;
-  }, 1) >= sizeToWin;
-  const horizontal = fields
-    .find(row => row.id ===cell.rowId).cells
-    .reduce((acc, row) => {
-      return row.state === user ? acc + 1 : acc;
-    }, 1) >= sizeToWin;
-  const topLeft = fields.reduce((acc, row, rowI) => {
-    const rowId = rowI + 1;
-    if (rowId < cell.rowId) { //top
-      const targetCell = row.cells[(cell.cellId - (cell.rowId - rowId)) - 1];
-      return (targetCell && targetCell.state === user) ? acc + 1 : acc;
-    } else if (rowId > cell.rowId) { //bottom
-      const targetCell = row.cells[(cell.cellId + (rowId - cell.rowId)) - 1];
-      return (targetCell && targetCell.state === user) ? acc + 1 : acc;
-    }
-    return acc;
-  }, 1) >= sizeToWin;
-  const topRight = fields.reduce((acc, row, rowI) => {
-    const rowId = rowI + 1;
-    if (rowId < cell.rowId) { //top
-      const targetCell = row.cells[(cell.cellId + (cell.rowId - rowId )) - 1];
-      return (targetCell && targetCell.state === user) ? acc + 1 : acc;
-    } else if (rowId > cell.rowId) { //bottom
-      const targetCell = row.cells[(cell.cellId - (rowId - cell.rowId)) - 1];
-      return (targetCell && targetCell.state === user) ? acc + 1 : acc;
-    }
-    return acc;
-  }, 1) >= sizeToWin;
-  const isWinner = vertical || horizontal || topLeft || topRight;
-  return isWinner ? user : null;
-};
 
 const changeSize = createEvent("check size");
 const clickHandler = createEffect("effect of user turn");
@@ -71,7 +36,7 @@ clickHandler.use(({ user, cell }) => {
   const currentIndex = USERS.findIndex(item => item === user);
   const nextUser = (currentIndex === USERS.length - 1) ? INITIAL_USER : USERS[currentIndex + 1];
   const fields = $fields.getState();
-  const winner = computeWinner({ fields, cell, user, sizeToWin: $sizeToWin.getState() });
+  const winner = computeScore({ fields, cell, user, sizeToWin: $sizeToWin.getState() });
   const nextFields = fields.map(row => {
     return {
       ...row,
