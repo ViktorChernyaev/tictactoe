@@ -1,109 +1,34 @@
-const calcVerticalTop = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId - 2 - i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId - 1];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
+import { FIELD_SIZE } from "./config";
+
+export const calc0deg = ({ turns, path, row, cell }) => {
+  const itemsInRow = [row];
+  for (let i = row - 1; i >= 0; i--) { //from clicked to top
+    if (turns[`${i}.${cell}`]) itemsInRow.push(i);
+    else break;
   }
-};
-const calcVerticalBottom = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId + i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId - 1];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
+  for (let i = row + 1; i < FIELD_SIZE; i++) { //from clicked to bottom
+    if (turns[`${i}.${cell}`]) itemsInRow.push(i);
+    else break;
   }
+  return itemsInRow.length;
 };
-
-const calcVertical = ({ fields, cell, user }) => {
-  const top = calcVerticalTop({ fields, cell, user });
-  const bottom = calcVerticalBottom({ fields, cell, user });
-  return top + bottom + 1;
-};
-
-
-const calcHorizontalLeft = ({ fields, cell, user }) => {
-  const row = fields[cell.rowId - 1];
-  for (let i = 0; i <= cell.rowId; i++) {
-    const cellItem = row.cells[cell.cellId - 2 - i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
+export const calc90deg = ({ turns, path, row, cell }) => {
+  const itemsInRow = [cell];
+  for (let i = cell - 1; i >= 0; i--) { //from clicked to left
+    if (turns[`${row}.${i}`]) itemsInRow.push(i);
+    else break;
   }
-};
-const calcHorizontalRight = ({ fields, cell, user }) => {
-  const row = fields[cell.rowId - 1];
-  for (let i = 0; i <= cell.rowId; i++) {
-    const cellItem = row.cells[cell.cellId + i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
+  for (let i = cell + 1; i < FIELD_SIZE; i++) { //from clicked to right
+    if (turns[`${row}.${i}`]) itemsInRow.push(i);
+    else break;
   }
+  return itemsInRow.length;
 };
-
-const calcHorizontal = ({ fields, cell, user }) => {
-  const left = calcHorizontalLeft({ fields, cell, user });
-  const right = calcHorizontalRight({ fields, cell, user });
-  return left + right + 1;
+export const calc135deg = ({ turns, path, row, cell }) => {
+  const itemsInRow = [cell];
+  return itemsInRow.length;
 };
-
-
-const calcTopLeft = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId - 2 - i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId - 2 - i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
-  }
-};
-const calcBottomRight = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId + i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId + i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
-  }
-};
-
-const calcTopLeftBottomRight = ({ fields, cell, user }) => {
-  const topLeft = calcTopLeft({ fields, cell, user });
-  const bottomRight = calcBottomRight({ fields, cell, user });
-  return topLeft + bottomRight + 1;
-};
-
-
-const calcTopRight = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId - 2 - i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId + i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
-  }
-};
-const calcBottomLeft = ({ fields, cell, user }) => {
-  for (let i = 0; i <= cell.rowId; i++) {
-    const row = fields[cell.rowId + i];
-    if (!row) return i;
-    const cellItem = row.cells[cell.cellId - 2 - i];
-    if (!cellItem) return i;
-    if (cellItem.state !== user) return i;
-  }
-};
-
-const calcTopRightBottomLeft = ({ fields, cell, user }) => {
-  const topRight = calcTopRight({ fields, cell, user });
-  const bottomLeft = calcBottomLeft({ fields, cell, user });
-  return topRight + bottomLeft + 1;
-};
-
-export const computeScore = ({ fields, cell, user, sizeToWin }) => {
-  const vertical = calcVertical({ fields, cell, user }) >= sizeToWin;
-  const horizontal = calcHorizontal({ fields, cell, user }) >= sizeToWin;
-  const topLeftBottomRight = calcTopLeftBottomRight({ fields, cell, user }) >= sizeToWin;
-  const topRightBottomLeft = calcTopRightBottomLeft({ fields, cell, user }) >= sizeToWin;
-  const isWinner = vertical || horizontal || topLeftBottomRight || topRightBottomLeft;
-  return isWinner ? user : null;
+export const calc45deg = ({ turns, path, row, cell }) => {
+  const itemsInRow = [cell];
+  return itemsInRow.length;
 };

@@ -16,5 +16,6 @@ export const Square = styled.div`
   vertical-lign: top;
   font-size: 10px;
   line-height: 12px;
-  cursor: ${props => props.clickable ? "pointer" : "not-allowed"};
+  cursor: ${props => props.color ? "not-allowed" : "pointer"};
+  background-color: ${props => props.color ? props.color : "transparent"};
 `

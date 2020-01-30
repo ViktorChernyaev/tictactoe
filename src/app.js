@@ -1,94 +1,67 @@
 import React from "react";
-import { createEvent, createEffect, createStore, combine } from "effector";
 import { useStore } from "effector-react";
 import { Row, Square } from "./ui";
-import { computeScore } from "./computeScore";
+import { FIELD_SIZE, SIZES_TO_WIN } from "./config";
+import {
+  sizeSelectClicked,
+  fieldClicked,
+  restartClicked,
+  $gameState,
+} from "./service";
 
-const USERS = ["Bruce Wayne", "Tony Stark"]; //unique names
-const INITIAL_USER = USERS[0];
-const FIELD_SIZE = 10;
-const SIZES_TO_WIN = [3, 4, 5];
-const DEF_SIZE_TO_WIN = SIZES_TO_WIN[0]
-const FIELDS = Array.from(Array(FIELD_SIZE).keys()).map(row => {
-  const rowId = row + 1;
-  return {
-    id: rowId,
-    cells: Array.from(Array(FIELD_SIZE).keys()).map(cell => {
-      return { rowId, cellId: cell + 1, state: null };
-    })
-  };
-});
-
-const changeSize = createEvent("check size");
-const clickHandler = createEffect("effect of user turn");
-
-const $currentUser = createStore(INITIAL_USER);
-const $fields = createStore(FIELDS);
-const $winner = createStore(null);
-const $sizeToWin = createStore(DEF_SIZE_TO_WIN);
-
-$currentUser.on(clickHandler.done, (_, { result }) => result.nextUser).reset(changeSize);
-$fields.on(clickHandler.done, (_, { result }) => result.nextFields).reset(changeSize);
-$winner.on(clickHandler.done, (_, { result }) => result.winner).reset(changeSize);
-$sizeToWin.on(changeSize, (_, size) => size);
-
-clickHandler.use(({ user, cell }) => {
-  const currentIndex = USERS.findIndex(item => item === user);
-  const nextUser = (currentIndex === USERS.length - 1) ? INITIAL_USER : USERS[currentIndex + 1];
-  const fields = $fields.getState();
-  const winner = computeScore({ fields, cell, user, sizeToWin: $sizeToWin.getState() });
-  const nextFields = fields.map(row => {
-    return {
-      ...row,
-      cells: row.cells.map(iteratedCell => {
-        const isTarget = iteratedCell.rowId === cell.rowId && iteratedCell.cellId === cell.cellId;
-        return { ...iteratedCell, state: isTarget ? user : iteratedCell.state };
-      })
-    };
-  });
-  return { nextUser, nextFields, winner };
-});
-
-const $domFields = combine($currentUser, $fields, (user, rows) => {
-  return rows.map(row => {
-    return (
-      <Row key={row.id}>
-        {row.cells.map(cell => {
-          const { cellId, state } = cell;
-          const clickable = !state;
-          const props = { clickable };
-          if (clickable) {
-            props.onClick = () => clickHandler({ user, cell });
-          }
-          return (
-            <Square key={cellId} {...props}>
-              {state || "  -  "}
-            </Square>
-          );
-        })}
-      </Row>
-    );
-  });
+const arr = Array.from(Array(FIELD_SIZE).keys());
+const FIELD_BODY = arr.map((item, row) => {
+  return arr.map((item, cell) => ({ row, cell, path: `${row}.${cell}` }));
 });
 
 export const App = () => {
-  const user = useStore($currentUser);
-  const winner = useStore($winner);
-  const fields = useStore($domFields);
-  const sizeToWin = useStore($sizeToWin);
+  const { currentUser, winner, sizeToWin, makedTurns } = useStore($gameState);
 
-  if (winner) return `${winner} is a winner!`;
+  if (winner) {
+    return (
+      <div>
+        {winner} is a winner!
+        <div onClick={restartClicked}>restart</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div>
         size to win:
-        <select value={sizeToWin} onChange={e => changeSize(parseInt(e.target.value, 10))}>
+        <select value={sizeToWin} onChange={sizeSelectClicked}>
           {SIZES_TO_WIN.map(size => <option key={size}>{size}</option>)}
         </select>
       </div>
-      <div>{user} TURN</div>
-      {fields}
+      <div>{currentUser} TURN</div>
+      {FIELD_BODY.map((rowItem, rowIndex) => {
+        return (
+          <Row key={rowIndex}>
+            {rowItem.map(cellItem => {
+
+              const color = makedTurns[cellItem.path];
+              const conditionalProps = {};
+              if (!color) {
+                conditionalProps.onClick = fieldClicked;
+              } else {
+                conditionalProps.color = color;
+              }
+
+              return (
+                <Square
+                  key={cellItem.path}
+                  data-cell={cellItem.cell}
+                  data-row={cellItem.row}
+                  data-path={cellItem.path}
+                  data-author={currentUser}
+                  {...conditionalProps}
+                />
+              );
+            })}
+          </Row>
+        );
+      })}
     </div>
   );
 };
