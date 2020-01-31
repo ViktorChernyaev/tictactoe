@@ -1,6 +1,5 @@
 import React from "react";
 import { useStore } from "effector-react";
-import { Row, Square } from "./ui";
 import { FIELD_SIZE, SIZES_TO_WIN } from "./config";
 import {
   sizeSelectClicked,
@@ -15,7 +14,7 @@ const FIELD_BODY = arr.map((item, row) => {
 });
 
 export const App = () => {
-  const { currentUser, winner, sizeToWin, makedTurns } = useStore($gameState);
+  const {currentUser, winner, sizeToWin, makedTurns} = useStore($gameState);
 
   if (winner) {
     return (
@@ -37,7 +36,7 @@ export const App = () => {
       <div>{currentUser} TURN</div>
       {FIELD_BODY.map((rowItem, rowIndex) => {
         return (
-          <Row key={rowIndex}>
+          <div className="Row" key={rowIndex}>
             {rowItem.map(cellItem => {
 
               const color = makedTurns[cellItem.path];
@@ -45,12 +44,13 @@ export const App = () => {
               if (!color) {
                 conditionalProps.onClick = fieldClicked;
               } else {
-                conditionalProps.color = color;
+                conditionalProps.style = { backgroundColor: color };
               }
 
               return (
-                <Square
+                <div
                   key={cellItem.path}
+                  className="Square"
                   data-cell={cellItem.cell}
                   data-row={cellItem.row}
                   data-path={cellItem.path}
@@ -59,7 +59,7 @@ export const App = () => {
                 />
               );
             })}
-          </Row>
+          </div>
         );
       })}
     </div>

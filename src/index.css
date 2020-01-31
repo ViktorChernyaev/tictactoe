@@ -1,13 +1,11 @@
-import styled from "styled-components";
-
-export const Row = styled.div`
+.Row {
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-start;
   jsutify-content: flex-start;
-`;
+}
 
-export const Square = styled.div`
+.Square {
   display: inline-block;
   width: 30px;
   height: 30px;
@@ -16,6 +14,9 @@ export const Square = styled.div`
   vertical-lign: top;
   font-size: 10px;
   line-height: 12px;
-  cursor: ${props => props.color ? "not-allowed" : "pointer"};
-  background-color: ${props => props.color ? props.color : "transparent"};
-`
+  cursor: pointer;
+}
+
+.Square[data-color] {
+  cursor: not-allowed;
+}

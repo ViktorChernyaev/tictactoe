@@ -6,29 +6,17 @@
     "effector": "^20.2.1",
     "effector-react": "^20.3.0",
     "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-scripts": "3.1.2",
-    "styled-components": "^4.3.2"
+    "react-dom": "^16.9.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "parcel index.html"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "main": "index.js",
+  "repository": "git@github.com:ViktorChernyaev/tictac.git",
+  "author": "bagunok <bagunok18@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.25.0"
   }
 }
