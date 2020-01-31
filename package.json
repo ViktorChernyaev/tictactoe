@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "effector": "^20.2.1",
+    "effector": "^20.11.5",
+    "effector-dom": "^0.0.7",
     "effector-react": "^20.3.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0"

@@ -6,10 +6,10 @@ export const sizeSelectClicked = createEvent("size to win clicked");
 export const fieldClicked = createEvent("field clicked");
 export const restartClicked = createEvent("restart clicked");
 
-const $currentUser = createStore(USERS[0]);
-const $winner = createStore(null);
-const $sizeToWin = createStore(SIZES_TO_WIN[0]);
-const $makedTurns = createStore({});
+export const $currentUser = createStore(USERS[0]);
+export const $winner = createStore(null);
+export const $sizeToWin = createStore(SIZES_TO_WIN[0]);
+export const $makedTurns = createStore({});
 
 export const $gameState = combine(
   $currentUser,

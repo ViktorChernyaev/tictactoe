@@ -1,20 +1,20 @@
 import React from "react";
 import { useStore } from "effector-react";
-import { FIELD_SIZE, SIZES_TO_WIN } from "./config";
+import { FIELD_SIZE, SIZES_TO_WIN } from "./core/config";
 import {
   sizeSelectClicked,
   fieldClicked,
   restartClicked,
   $gameState,
-} from "./service";
+} from "./core/service";
 
 const arr = Array.from(Array(FIELD_SIZE).keys());
 const FIELD_BODY = arr.map((item, row) => {
   return arr.map((item, cell) => ({ row, cell, path: `${row}.${cell}` }));
 });
 
-export const App = () => {
-  const {currentUser, winner, sizeToWin, makedTurns} = useStore($gameState);
+export const ReactApp = () => {
+  const { currentUser, winner, sizeToWin, makedTurns } = useStore($gameState);
 
   if (winner) {
     return (
