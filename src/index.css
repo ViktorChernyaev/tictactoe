@@ -2,7 +2,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-start;
-  jsutify-content: flex-start;
+  justify-content: flex-start;
 }
 
 .Square {
@@ -11,12 +11,12 @@
   height: 30px;
   border: 1px solid #ddd;
   text-align: center;
-  vertical-lign: top;
+  vertical-align: top;
   font-size: 10px;
   line-height: 12px;
-  cursor: pointer;
+  cursor: not-allowed;
 }
 
-.Square[data-color] {
-  cursor: not-allowed;
+.Square[style="background-color: transparent;"] {
+  cursor: pointer;
 }

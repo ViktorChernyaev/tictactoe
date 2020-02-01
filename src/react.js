@@ -1,17 +1,12 @@
 import React from "react";
 import { useStore } from "effector-react";
-import { FIELD_SIZE, SIZES_TO_WIN } from "./core/config";
+import { FIELD_BODY, SIZES_TO_WIN } from "./core/config";
 import {
   sizeSelectClicked,
   fieldClicked,
   restartClicked,
   $gameState,
 } from "./core/service";
-
-const arr = Array.from(Array(FIELD_SIZE).keys());
-const FIELD_BODY = arr.map((item, row) => {
-  return arr.map((item, cell) => ({ row, cell, path: `${row}.${cell}` }));
-});
 
 export const ReactApp = () => {
   const { currentUser, winner, sizeToWin, makedTurns } = useStore($gameState);
@@ -40,11 +35,11 @@ export const ReactApp = () => {
             {rowItem.map(cellItem => {
 
               const color = makedTurns[cellItem.path];
-              const conditionalProps = {};
+              const conditionalProps = {
+                style: { backgroundColor: color || "transparent" }
+              };
               if (!color) {
                 conditionalProps.onClick = fieldClicked;
-              } else {
-                conditionalProps.style = { backgroundColor: color };
               }
 
               return (
