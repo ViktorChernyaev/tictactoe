@@ -36,11 +36,9 @@ export const ReactApp = () => {
 
               const color = makedTurns[cellItem.path];
               const conditionalProps = {
-                style: { backgroundColor: color || "transparent" }
+                style: { backgroundColor: color || "transparent" },
+                onClick: fieldClicked,
               };
-              if (!color) {
-                conditionalProps.onClick = fieldClicked;
-              }
 
               return (
                 <div

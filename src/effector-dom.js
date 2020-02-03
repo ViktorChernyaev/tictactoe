@@ -49,11 +49,8 @@ export const effectorDomApp = () => {
                 { cell: "cell", row: "row", path: "path", author: "author" }
               ),
               attr: { class: "Square" },
-              handler: remap(
-                $color.map(({ color }) => ({ click: color ? () => null : fieldClicked })),
-                { click: "click" }
-              ),
-              style: remap($color, { backgroundColor: 'color' }),
+              handler: { click: fieldClicked },
+              style: remap($color, { backgroundColor: "color" }),
             });
           });
         });

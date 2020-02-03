@@ -1,9 +1,10 @@
-import { createEvent, createStore, combine, sample, createEffect } from "effector";
+import { createEvent, createStore, combine, sample, guard, createEffect } from "effector";
 import { USERS, SIZES_TO_WIN } from "./config";
 import { calc0deg, calc90deg, calc135deg, calc45deg } from "./computeScore";
 
 export const sizeSelectClicked = createEvent("size to win clicked");
 export const fieldClicked = createEvent("field clicked");
+const fieldClickedSuccesfully = createEvent();
 export const restartClicked = createEvent("restart clicked");
 
 export const $currentUser = createStore(USERS[0]);
@@ -38,20 +39,26 @@ const calcIsHaveWinnableRow = createEffect({
 });
 
 const sizeSelectChanged = sizeSelectClicked.map(e => parseInt(e.target.value, 10));
-const userChanged = fieldClicked.map(e => {
+const userChanged = fieldClickedSuccesfully.map(({ e }) => {
   const currentIndex = USERS.findIndex(item => item === e.target.dataset.author);
   return currentIndex === USERS.length - 1 ? USERS[0] : USERS[currentIndex + 1];
 });
-const turnMaked = fieldClicked.map(e => {
+const turnMaked = fieldClickedSuccesfully.map(({ e }) => {
   const { author, path } = e.target.dataset;
   return { author, path };
 });
 const winnerReceived = calcIsHaveWinnableRow.done.filterMap(({ result }) => !!result && result);
 
+guard({
+  source: sample($currentUser, fieldClicked, (author, e) => ({ author, e })),
+  filter: ({ author, e }) => author === e.target.dataset.author,
+  target: fieldClickedSuccesfully,
+});
+
 sample({
   source: $gameState,
-  clock: fieldClicked,
-  fn: (state, e) => {
+  clock: fieldClickedSuccesfully,
+  fn: (state, { e }) => {
     const { author, path, row, cell } = e.target.dataset;
     return { state, author, path, row: parseInt(row, 10), cell: parseInt(cell, 10) };
   },
