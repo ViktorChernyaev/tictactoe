@@ -1,5 +1,5 @@
-export const USERS = ['green', 'red'];
-export const FIELD_SIZE = 10;
+export const USERS = ["rebeccapurple", "green", "red", "blue"];
+export const FIELD_SIZE = 12;
 export const SIZES_TO_WIN = [3, 4, 5];
 
 const arr = Array.from(Array(FIELD_SIZE).keys());

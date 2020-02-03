@@ -1,4 +1,4 @@
-import { createEvent, createStore, combine, sample, guard, createEffect } from "effector";
+import { createEvent, createStore, combine, sample, guard } from "effector";
 import { USERS, SIZES_TO_WIN } from "./config";
 import { calc0deg, calc90deg, calc135deg, calc45deg } from "./computeScore";
 
