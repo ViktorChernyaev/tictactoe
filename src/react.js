@@ -9,7 +9,7 @@ import {
 } from "./core/service";
 
 export const ReactApp = () => {
-  const { currentUser, winner, sizeToWin, makedTurns } = useStore($gameState);
+  const { current, winner, size, turns } = useStore($gameState);
 
   if (winner) {
     return (
@@ -24,22 +24,16 @@ export const ReactApp = () => {
     <div>
       <div>
         size to win:
-        <select value={sizeToWin} onChange={sizeSelectClicked}>
-          {SIZES_TO_WIN.map(size => <option key={size}>{size}</option>)}
+        <select value={size} onChange={sizeSelectClicked}>
+          {SIZES_TO_WIN.map(sizesItem => <option key={sizesItem}>{sizesItem}</option>)}
         </select>
       </div>
-      <div>{currentUser} TURN</div>
+      <div>{current} TURN</div>
       {FIELD_BODY.map((rowItem, rowIndex) => {
         return (
           <div className="Row" key={rowIndex}>
             {rowItem.map(cellItem => {
-
-              const color = makedTurns[cellItem.path];
-              const conditionalProps = {
-                style: { backgroundColor: color || "transparent" },
-                onClick: fieldClicked,
-              };
-
+              const color = turns[cellItem.path];
               return (
                 <div
                   key={cellItem.path}
@@ -47,8 +41,9 @@ export const ReactApp = () => {
                   data-cell={cellItem.cell}
                   data-row={cellItem.row}
                   data-path={cellItem.path}
-                  data-author={currentUser}
-                  {...conditionalProps}
+                  data-disabled={!!color}
+                  style={{ backgroundColor: color || "transparent" }}
+                  onClick={fieldClicked}
                 />
               );
             })}

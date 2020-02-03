@@ -4,7 +4,7 @@ import { calc0deg, calc90deg, calc135deg, calc45deg } from "./computeScore";
 
 export const sizeSelectClicked = createEvent("size to win clicked");
 export const fieldClicked = createEvent("field clicked");
-const fieldClickedSuccesfully = createEvent();
+const turnMaked = createEvent("fires when clicked free field");
 export const restartClicked = createEvent("restart clicked");
 
 export const $currentUser = createStore(USERS[0]);
@@ -17,52 +17,41 @@ export const $gameState = combine(
   $winner,
   $sizeToWin,
   $makedTurns,
-  (currentUser, winner, sizeToWin, makedTurns) => ({ currentUser, winner, sizeToWin, makedTurns })
+  (current, winner, size, turns) => ({ current, winner, size, turns })
 );
 
-const calcIsHaveWinnableRow = createEffect({
-  handler: ({ state, path, row, cell, author }) => {
-    const { makedTurns, sizeToWin } = state;
-    const authorsTurns = {};
-    for (const key in makedTurns) {
-      if (makedTurns[key] === author) {
-        authorsTurns[key] = makedTurns[key];
-      }
-    }
-    const is0deg = calc0deg({ turns: authorsTurns, path, row, cell }) >= sizeToWin;
-    const is90deg = calc90deg({ turns: authorsTurns, path, row, cell }) >= sizeToWin;
-    const is135deg = calc135deg({ turns: authorsTurns, path, row, cell }) >= sizeToWin;
-    const is45deg = calc45deg({ turns: authorsTurns, path, row, cell }) >= sizeToWin;
-    if (is0deg || is90deg || is135deg || is45deg) return author;
-    return null;
-  }
+guard({
+  source: sample({
+    source: $gameState,
+    clock: fieldClicked,
+    fn: ({ current, turns, size }, e) => {
+      if (turns[e.target.dataset.path]) return {};
+      const { path, row, cell } = e.target.dataset;
+      return { current, turns, path, row: parseInt(row, 10), cell: parseInt(cell, 10), size };
+    },
+  }),
+  filter: ({ current }) => !!current,
+  target: turnMaked,
 });
 
 const sizeSelectChanged = sizeSelectClicked.map(e => parseInt(e.target.value, 10));
-const userChanged = fieldClickedSuccesfully.map(({ e }) => {
-  const currentIndex = USERS.findIndex(item => item === e.target.dataset.author);
+const userChanged = turnMaked.map(({ current }) => {
+  const currentIndex = USERS.findIndex(item => item === current);
   return currentIndex === USERS.length - 1 ? USERS[0] : USERS[currentIndex + 1];
 });
-const turnMaked = fieldClickedSuccesfully.map(({ e }) => {
-  const { author, path } = e.target.dataset;
-  return { author, path };
-});
-const winnerReceived = calcIsHaveWinnableRow.done.filterMap(({ result }) => !!result && result);
+const winnerReceived = turnMaked.filterMap(({ turns, size, path, row, cell, current }) => {
+  const authorsTurns = {};
+  for (const key in turns) {
+    if (turns[key] === current) {
+      authorsTurns[key] = turns[key];
+    }
+  }
+  const is0deg = calc0deg({ turns: authorsTurns, path, row, cell }) >= size;
+  const is90deg = calc90deg({ turns: authorsTurns, path, row, cell }) >= size;
+  const is135deg = calc135deg({ turns: authorsTurns, path, row, cell }) >= size;
+  const is45deg = calc45deg({ turns: authorsTurns, path, row, cell }) >= size;
 
-guard({
-  source: sample($currentUser, fieldClicked, (author, e) => ({ author, e })),
-  filter: ({ author, e }) => author === e.target.dataset.author,
-  target: fieldClickedSuccesfully,
-});
-
-sample({
-  source: $gameState,
-  clock: fieldClickedSuccesfully,
-  fn: (state, { e }) => {
-    const { author, path, row, cell } = e.target.dataset;
-    return { state, author, path, row: parseInt(row, 10), cell: parseInt(cell, 10) };
-  },
-  target: calcIsHaveWinnableRow,
+  if (is0deg || is90deg || is135deg || is45deg) return current;
 });
 
 $currentUser
@@ -75,5 +64,5 @@ $sizeToWin
   .on(sizeSelectChanged, (_, size) => size)
   .reset(restartClicked);
 $makedTurns
-  .on(turnMaked, (config, turn) => ({ ...config, [turn.path]: turn.author }))
+  .on(turnMaked, (config, turn) => ({ ...config, [turn.path]: turn.current }))
   .reset(sizeSelectChanged, restartClicked);

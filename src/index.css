@@ -1,3 +1,14 @@
+.page-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-around;
+  width: 100vw;
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .Row {
   display: flex;
   flex-flow: row nowrap;
@@ -14,9 +25,9 @@
   vertical-align: top;
   font-size: 10px;
   line-height: 12px;
-  cursor: not-allowed;
+  cursor: pointer;
 }
 
-.Square[style="background-color: transparent;"] {
-  cursor: pointer;
+.Square[data-disabled="true"] {
+  cursor: not-allowed;
 }

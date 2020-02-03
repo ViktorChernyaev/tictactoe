@@ -11,9 +11,6 @@ import {
   $makedTurns,
 } from "./core/service";
 
-const $sizesOptions = createStore(SIZES_TO_WIN);
-const $fieldBody = createStore(FIELD_BODY);
-
 export const effectorDomApp = () => {
   h("div", () => {
     spec({ visible: $winner.map(winner => !!winner) });
@@ -27,13 +24,13 @@ export const effectorDomApp = () => {
       h("span", { text: "size to win:" });
       h("select", () => {
         spec({ value: $sizeToWin, handler: { change: sizeSelectClicked } });
-        list($sizesOptions, ({ store }) => {
+        list(createStore(SIZES_TO_WIN), ({ store }) => {
           h("option", { text: store });
         });
       });
     });
     h("div", { text: $currentUser.map(name => `${name} TURN`) });
-    list($fieldBody, ({ store }) => {
+    list(createStore(FIELD_BODY), ({ store }) => {
       h("div", () => {
         spec({ attr: { class: "Row" } });
         list(store, ({ store }) => {
@@ -44,10 +41,7 @@ export const effectorDomApp = () => {
               (dataset, turns) => ({ color: turns[dataset.path] || "transparent" })
             );
             spec({
-              data: remap(
-                combine(store, $currentUser, (dataset, author) => ({ ...dataset, author })),
-                { cell: "cell", row: "row", path: "path", author: "author" }
-              ),
+              data: remap(store, { cell: "cell", row: "row", path: "path" }),
               attr: { class: "Square" },
               handler: { click: fieldClicked },
               style: remap($color, { backgroundColor: "color" }),
