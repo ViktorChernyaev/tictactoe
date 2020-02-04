@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "effector": "^20.11.5",
-    "effector-dom": "^0.0.7",
+    "effector-dom": "^0.0.9",
     "effector-react": "^20.3.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0"

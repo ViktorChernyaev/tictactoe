@@ -23,7 +23,10 @@ export const effectorDomApp = () => {
     h("div", () => {
       h("span", { text: "size to win:" });
       h("select", () => {
-        spec({ value: $sizeToWin, handler: { change: sizeSelectClicked } });
+        spec({
+          attr: { value: $sizeToWin },
+          handler: { change: sizeSelectClicked }
+        });
         list(createStore(SIZES_TO_WIN), ({ store }) => {
           h("option", { text: store });
         });
